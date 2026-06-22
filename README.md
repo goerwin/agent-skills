@@ -1,4 +1,4 @@
-# goerwin/skills
+# Agent Skills
 
 Personal agent skills for coding assistants — installable with [npx skills](https://github.com/vercel-labs/skills).
 
