@@ -1,6 +1,6 @@
 ---
 name: code-review
-description: Scoped, merge-base-correct review of a GitHub PR or branch changes — reviews only what the PR actually introduced (never stale/unrelated files). Invoke explicitly; do not auto-trigger from review requests.
+description: Use when explicitly asked to review a GitHub PR or branch's changes. Reviews only what the branch introduced via the merge-base diff (never stale or unrelated files), then reports findings without modifying the branch or posting to GitHub.
 disable-model-invocation: true
 ---
 
@@ -69,7 +69,7 @@ Where the values come from:
 
 ## 4. Review (brief — you already know how)
 
-Cover, in priority order: **correctness/bugs first**, then security, then quality/style/naming/tests/simplification. Review file-by-file for large diffs.
+Cover, in priority order: **correctness/bugs first**, then security, then quality (style, naming, tests, simplification). Review file-by-file for large diffs.
 
 **Repo root for paths** — resolve once and use for every path in scope, comments, and saved output:
 
@@ -115,7 +115,7 @@ Cite locations as `path:line` (or `path:start-end` for a range). Path must be **
 After printing the review, **ask** "Save to `<dir>/<filename>`?". Write the file only if the user confirms.
 
 - Location: `.goerwin/code-reviews/` at the repo root when inside a git repo; `~/.goerwin/code-reviews/` when no repo is found.
-- Filename: `<yyyy-mm-dd>-<NN>-<branch>:<base>.md`. `NN` = next per-day index from `01`; `<branch>` = current git branch (Scenario A: the PR's head branch); sanitize `/`→`-` within each branch name.
+- Filename: `<yyyy-mm-dd>-<NN>-<branch>.<base>.md`. `NN` = next per-day index from `01`; `<branch>` = current git branch (Scenario A: the PR's head branch); sanitize `/`→`-` within each branch name.
   ```bash
   if git rev-parse --git-dir >/dev/null 2>&1; then
     root=$(git rev-parse --show-toplevel)
@@ -128,7 +128,7 @@ After printing the review, **ask** "Save to `<dir>/<filename>`?". Write the file
   n=$(printf '%02d' $(( 10#${last:-0} + 1 )))
   branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || printf 'no-repo')   # head branch; in Scenario A use the PR's headRefName
   br=$(printf '%s' "$branch" | tr '/' '-'); b=$(printf '%s' "<base>" | tr '/' '-')
-  file="$dir/$d-$n-$br:$b.md"   # e.g. .goerwin/code-reviews/2026-06-22-01-feat-button:main.md
+  file="$dir/$d-$n-$br.$b.md"   # e.g. .goerwin/code-reviews/2026-06-22-01-feat-button.main.md
   ```
   Write the same markdown shown in chat (scope header + review) to `$file`.
 
