@@ -4,7 +4,7 @@ description: Manage implementation plans in .goerwin/plans/. Invoke explicitly; 
 disable-model-invocation: true
 ---
 
-# Plans
+# Plan
 
 ## Location
 
