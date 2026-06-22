@@ -1,6 +1,7 @@
 ---
 name: code-review
 description: Scoped, merge-base-correct review of a GitHub PR or branch changes — reviews only what the PR actually introduced (never stale/unrelated files). Invoke explicitly; do not auto-trigger from review requests.
+disable-model-invocation: true
 ---
 
 # Code Review

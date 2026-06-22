@@ -6,7 +6,8 @@ Personal agent skills for coding assistants — installable with [npx skills](ht
 
 | Skill                                      | Description                                                                                                                                                                                                                                                                                                                                 |
 | ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [code-review](skills/code-review/SKILL.md) | Scoped, merge-base-correct review of a GitHub PR or branch — reviews only what the change actually introduced. Invoke with `/code-review` in Cursor. Previews scope for confirmation, then optionally saves to `.goerwin/code-reviews/` (in a repo) or `~/.goerwin/code-reviews/` (no repo), e.g. `2026-06-22-01-feat-button:main.md`. |
+| [code-review](skills/code-review/SKILL.md) | Scoped, merge-base-correct review of a GitHub PR or branch — reviews only what the change actually introduced. Invoke with `/code-review` in Cursor. Previews scope for confirmation, then optionally saves to `.goerwin/code-reviews/` (in a repo) or `~/.goerwin/code-reviews/` (no repo), e.g. `2026-06-22-01-feat-button:main.md`. Does not auto-trigger. |
+| [plan](skills/plan/SKILL.md) | Manage implementation plans in `.goerwin/plans/`. Invoke with `/plan` in Cursor. Checks for existing plans, creates or updates with user approval, asks about branch/worktree before implementing. Does not auto-trigger. |
 
 ## Install
 
@@ -21,7 +22,7 @@ npx skills add goerwin/skills
 ### One skill
 
 ```bash
-npx skills add goerwin/skills --skill code-review
+npx skills add goerwin/skills --skill <skill>
 ```
 
 ### Global install (available in every project)
@@ -46,8 +47,8 @@ npx skills add ./skills
 ## Update & remove
 
 ```bash
-npx skills update code-review
-npx skills remove code-review
+npx skills update <skill>
+npx skills remove <skill>
 npx skills list
 ```
 
