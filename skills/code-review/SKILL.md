@@ -71,28 +71,38 @@ Where the values come from:
 
 Cover, in priority order: **correctness/bugs first**, then security, then quality/style/naming/tests/simplification. Review file-by-file for large diffs.
 
+**Repo root for paths** — resolve once and use for every path in scope, comments, and saved output:
+
+```bash
+repo_root=$(git rev-parse --show-toplevel 2>/dev/null)
+```
+
+All file paths must be **repo-root-relative** (e.g. `src/components/Button.tsx`), never cwd-relative or scoped to the folder being edited. Paths from `git diff` / `gh pr diff` are already correct — reuse them verbatim. When reading a file by absolute path, strip the `repo_root/` prefix before citing.
+
 ## 5. Output (chat)
 
 The review record is the **scope header from step 2** followed by the review body. Print
-(and, on save, store) them together:
+(and, on save, store) them together.
 
+Structure:
+
+- Scope / Source header (same as step 2)
+- `Summary:` — what the change does
+- `Comments` — numbered list; line-specific items cite `repo-root/path:line` on the same line
+- `Unresolved threads` — optional; other reviewers' open points with `path:line` when applicable
+- `Verdict:` — required
+
+Example comment output:
+
+```markdown
+1. [bug] src/components/Button.tsx:42 — Missing null check before `.map()`
+2. [quality] src/utils/format.ts:12 — Extract repeated validation into a helper
+3. (no line) — [release] Missing changeset entry
 ```
-<same Scope / Source header as step 2>
 
-Summary: <what the change does>
+Cite locations as `path:line` (or `path:start-end` for a range). Path must be **repo-root-relative** (`src/components/Button.tsx:42`), never cwd-relative (`Button.tsx:42`).
 
-Comments
-  1. <path>:<line> — [severity] <comment>
-  2. <path>:<line> — [severity] <comment>
-  3. (no line)     — [severity] <PR-level comment, e.g. missing changeset>
-
-Unresolved threads (other reviewers)
-  - <path>:<line> — [reviewer] <their point> → <your take>
-
-Verdict: <approve | approve with comments | comment | request changes> — <one-line reason>
-```
-
-**Comments** — one numbered item per suggestion: `path:line` → a `[severity]` tag (e.g. bug / security / quality / perf / test / release) → the comment. PR-level items with no specific line use `(no line)`. Keep other reviewers' still-open threads in the **separate** Unresolved threads section, each with your take.
+**Comments** — one numbered item per suggestion with a `[severity]` tag (bug / security / quality / perf / test / release). PR-level items with no specific line use `(no line)`. Keep other reviewers' still-open threads in **Unresolved threads**, each with `path:line` when a line applies.
 
 **Verdict** is required — pick one. It maps to GitHub's review actions and is advisory only (the skill never posts to GitHub):
 - **approve** — good to merge, no blocking concerns.
