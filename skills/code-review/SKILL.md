@@ -18,8 +18,13 @@ Two-dot also shows files the *target* branch changed after this branch diverged,
 Decide what to review:
 
 - A PR number/URL was given, **or** an open PR exists for the current branch → **Scenario A** (PR is source of truth).
-  Detect an open PR for the current branch:
-  `gh pr view --json number,baseRefName,headRefName 2>/dev/null`
+  Detect an open PR for the current branch (resolve the head from the upstream
+  tracking ref — the local branch name can differ from the remote/PR head, e.g.
+  worktrees that rename slash→dash; fall back to the local name):
+  ```bash
+  up=$(git rev-parse --abbrev-ref '@{u}' 2>/dev/null); head_ref=${up#*/}
+  gh pr view "${head_ref:-$(git branch --show-current)}" --json number,baseRefName,headRefName 2>/dev/null
+  ```
 - Otherwise → **Scenario B** (branch-vs-branch).
 
 ### Scenario A — PR is source of truth
@@ -48,6 +53,7 @@ Print the scope header + changed-file list, then **pause** so the user can confi
 
 ```
 Scope: <head> -> <base> | merge-base <short-sha> | <N> files, +<adds>/-<dels> | <X> commits behind <base>
+PR: #<number> <url>                    # Scenario A only — omit this line in Scenario B
 Source: GitHub (gh pr diff) | local fallback (gh unavailable) | branch-vs-branch
 Files:
   <status> <path>
@@ -55,6 +61,7 @@ Files:
 ```
 
 Where the values come from:
+- PR / url: Scenario A with `gh` → `number`,`url` from `gh pr view <pr> --json number,url` (same call as step 1; reuse the result). Omit the `PR:` line when there is no PR (Scenario B) or when using local fallback without a resolved PR.
 - files / +adds / -dels: gh → `additions`,`deletions`,`changedFiles` from `gh pr view`; local → `git diff --shortstat origin/<base>...HEAD`.
 - merge-base / commits behind: local → `git merge-base origin/<base> HEAD` and `git rev-list --count HEAD..origin/<base>`; gh-only (no clone) → `gh api repos/{owner}/{repo}/compare/<base>...<head> --jq '.merge_base_commit.sha[0:7], .behind_by'`.
 
@@ -126,7 +133,8 @@ After printing the review, **ask** "Save to `<dir>/<filename>`?". Write the file
   d=$(date +%F); mkdir -p "$dir"
   last=$(ls "$dir" 2>/dev/null | sed -nE "s/^$d-([0-9]{2})-.*/\1/p" | sort -n | tail -1)
   n=$(printf '%02d' $(( 10#${last:-0} + 1 )))
-  branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || printf 'no-repo')   # head branch; in Scenario A use the PR's headRefName
+  up=$(git rev-parse --abbrev-ref '@{u}' 2>/dev/null); branch=${up#*/}        # PR/remote head (Scenario A); strips remote prefix
+  branch=${branch:-$(git rev-parse --abbrev-ref HEAD 2>/dev/null || printf 'no-repo')}   # fall back to local branch name
   br=$(printf '%s' "$branch" | tr '/' '-'); b=$(printf '%s' "<base>" | tr '/' '-')
   file="$dir/$d-$n-$br.$b.md"   # e.g. .goerwin/code-reviews/2026-06-22-01-feat-button.main.md
   ```
