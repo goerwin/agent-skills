@@ -8,6 +8,7 @@ Personal agent skills for coding assistants — installable with [npx skills](ht
 | ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | [code-review](skills/code-review/SKILL.md) | Scoped, merge-base-correct review of a GitHub PR or branch — reviews only what the change actually introduced. Invoke with `/code-review` in Cursor. Previews scope for confirmation, then optionally saves to `.goerwin/code-reviews/` (in a repo) or `~/.goerwin/code-reviews/` (no repo), e.g. `2026-06-22-01-feat-button:main.md`. Does not auto-trigger. |
 | [plan](skills/plan/SKILL.md) | Manage implementation plans in `.goerwin/plans/`. Invoke with `/plan` in Cursor. Checks for existing plans, creates or updates with user approval, asks about branch/worktree before implementing. Does not auto-trigger. |
+| [supacode-pull-request](skills/supacode-pull-request/SKILL.md) | Create a supacode worktree for a GitHub PR from a PR URL. Invoke with `/supacode-pull-request`. Names the local branch `pr-<n>-<headRef-dashed>` (shown in supacode's sidebar) tracking the real PR branch on origin, so pull/push update the PR. Run inside the repo's supacode tab. Does not auto-trigger. |
 
 ## Install
 

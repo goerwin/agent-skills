@@ -13,6 +13,23 @@ Review **only what the PR/branch introduced**, then report findings. Never modif
 Always diff against the **merge-base** — three-dot `base...head` — **never** two-dot `base head`.
 Two-dot also shows files the *target* branch changed after this branch diverged, so a stale branch drags in unrelated files. Three-dot shows only this branch's changes and matches GitHub's "Files changed" tab even when the branch is behind target.
 
+## Hard gates (never skip)
+
+This skill has two points where you MUST stop and wait for the user. They are the
+most-skipped parts of the skill — treat each as a hard barrier, not a suggestion:
+
+1. **After step 2 (scope preview)** — wait for the user to confirm scope *before* reading or analyzing any changed file.
+2. **Before step 6 (save)** — ask before writing the review to disk.
+
+These thoughts mean you are about to skip gate 1 — STOP:
+
+| Rationalization | Reality |
+|---|---|
+| "I'll read the files while they decide" | Reading a changed file IS reviewing. It happens after confirmation. |
+| "I already know the scope is right" | The gate is for the user to confirm, not you. Print it and wait. |
+| "Gathering context isn't reviewing yet" | Opening any changed file is step 4. Stop at step 2. |
+| "It's a small / obvious PR" | Size never waives the gate. Always pause. |
+
 ## 1. Resolve scope
 
 Decide what to review:
@@ -47,9 +64,17 @@ Decide what to review:
   git diff origin/<base>...HEAD -- <path>       # per file
   ```
 
-## 2. Preview scope — confirm before reviewing
+## 2. Preview scope — STOP and wait for confirmation
 
-Print the scope header + changed-file list, then **pause** so the user can confirm the files match what they expect (or correct the base/branch). Review only after they confirm.
+🛑 **MANDATORY STOP.** Print the scope header + changed-file list (format below), ask the user to confirm the scope is right, then **end your turn and wait for their reply.** Do not continue in the same response.
+
+Until the user replies, you MUST NOT:
+- read, open, `Read`, or otherwise inspect any changed file,
+- fetch the full diff or any per-file diff for analysis,
+- run step 3 (enrich) or step 4 (review), or
+- call any further tool.
+
+The only actions allowed before this point are the scope-gathering commands in steps 1–2. **Reading or analyzing a changed file is reviewing** — it happens *after* confirmation, never before. If the user corrects the base/branch, re-run scope and stop again.
 
 ```
 Scope: <head> -> <base> | merge-base <short-sha> | <N> files, +<adds>/-<dels> | <X> commits behind <base>
